@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fisher Online Clock</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-color: #1a1a2e;
+      color: #f0f0f0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #00d9ff;
+    }
+    #time-display {
+      font-size: 3rem;
+      font-weight: bold;
+      padding: 20px 40px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+    }
+    #time-display p {
+      margin: 0;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 1rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fisher Online Clock</h1>
+  <div id="time-display">
+    <p>Loading in-game time...</p>
+  </div>
+  <footer>
+    <p>Time scales: 5 real seconds = 1 in-game minute</p>
+  </footer>
+
+  <script>
+    // Game synchronization info
+    const realGameStartTime = new Date('2024-11-28T20:40:00'); // Real-world start time of the game
+    const inGameStartTime = { hours: 20, minutes: 0 }; // In-game start time (e.g., 20:00 or 8:00 PM)
+
+    function getInGameTime() {
+      const nowRealTime = new Date();
+      const elapsedRealTime = (nowRealTime - realGameStartTime) / 1000; // elapsed real time in seconds
+
+      // Calculate elapsed in-game time
+      const elapsedInGameMinutes = elapsedRealTime / 5; // 5 real seconds = 1 in-game minute
+
+      // Add elapsed in-game minutes to the in-game start time
+      const totalInGameMinutes = inGameStartTime.hours * 60 + inGameStartTime.minutes + elapsedInGameMinutes;
+      const inGameHours24 = Math.floor((totalInGameMinutes / 60) % 24); // In-game hours in 24-hour format (0-23)
+      const inGameMinutes = Math.floor(totalInGameMinutes % 60); // In-game minutes (0-59)
+
+      // Convert to 12-hour format with AM/PM
+      const inGameHours12 = inGameHours24 % 12 || 12; // 0 becomes 12
+      const amPm = inGameHours24 >= 12 ? 'PM' : 'AM';
+
+      // Format the time with leading zeroes for minutes
+      const formattedTime = `${inGameHours12.toString().padStart(2, '0')}:${inGameMinutes.toString().padStart(2, '0')} ${amPm}`;
+      return formattedTime;
+    }
+
+    function updateInGameTime() {
+      const timeDisplay = document.getElementById('time-display');
+      const inGameTime = getInGameTime();
+      timeDisplay.innerHTML = `<p>${inGameTime}</p>`;
+    }
+
+    // Update in-game time every second
+    setInterval(updateInGameTime, 1000);
+
+    // Initial update
+    updateInGameTime();
+  </script>
+</body>
+</html>
